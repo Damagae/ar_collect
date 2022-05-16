@@ -6,8 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Samples/Mixed Reality Toolkit Examples/2.7.3/Demos - SpatialAwareness/Scenes/SpatialAwarenessMeshDemo.unity
-    guid: 9db181581e617224e962601f062da844
+    path: Assets/Rose.Daphne.ARCollect/Scenes/Main_Scene.unity
+    guid: 1949d4a8479cf794f87c74426fa8e5c5
   m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 5fd5bfe6a78d53f4aa0fb4c2cce862e5, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 46377f73f1e76734fb9aee0b527e6908, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 5230fc05f7207cb4db70be41d38468f3, type: 2}

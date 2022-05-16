@@ -10,12 +10,6 @@
         "com.unity.xr.openxr": "1.3.1"
       }
     },
-    "com.microsoft.mixedreality.sceneunderstanding": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.sceneunderstanding-0.6.0.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {}
-    },
     "com.microsoft.mixedreality.toolkit.examples": {
       "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.examples-2.7.3.tgz",
       "depth": 0,
@@ -40,12 +34,6 @@
       "dependencies": {
         "com.microsoft.mixedreality.toolkit.standardassets": "2.7.3"
       }
-    },
-    "com.microsoft.mixedreality.toolkit.planefinding": {
-      "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.planefinding-1.0.0.tgz",
-      "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {}
     },
     "com.microsoft.mixedreality.toolkit.standardassets": {
       "version": "file:MixedReality/com.microsoft.mixedreality.toolkit.standardassets-2.7.3.tgz",
@@ -122,7 +110,7 @@
     },
     "com.unity.subsystemregistration": {
       "version": "1.1.0",
-      "depth": 3,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.subsystems": "1.0.0"
@@ -170,6 +158,18 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.unity.xr.arcore": {
+      "version": "4.1.10",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.xr.arsubsystems": "4.1.10",
+        "com.unity.xr.management": "4.0.1",
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.xr.arfoundation": {
       "version": "4.1.7",
       "depth": 1,
@@ -181,8 +181,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.arsubsystems": {
-      "version": "4.1.9",
-      "depth": 2,
+      "version": "4.1.10",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.subsystemregistration": "1.1.0"
