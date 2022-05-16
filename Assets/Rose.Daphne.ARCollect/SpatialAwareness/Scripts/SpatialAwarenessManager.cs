@@ -1,0 +1,144 @@
+using Microsoft.MixedReality.Toolkit.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.XR.ARFoundation;
+
+namespace Rose.Daphne.ARCollect.SpatialAwareness
+{
+    /// <summary>
+    /// Manage environement detection.
+    /// </summary>
+    public class SpatialAwarenessManager : MonoBehaviour
+    {
+        [SerializeField]
+        private ARPlaneManager planeManager = null;
+
+        [SerializeField]
+        private Material floorMaterial = null;
+
+        [SerializeField]
+        private Transform debugPlane = null;
+        internal Transform DebugPlane => debugPlane;
+
+        [SerializeField]
+        private bool debug = false;
+
+        internal static SpatialAwarenessManager Instance { private set; get; } = null;
+
+        private List<ARPlane> floorPlanes = new List<ARPlane>();
+        internal List<ARPlane> FloorPlanes => floorPlanes;
+
+        internal bool IsFloorAvailable => true;// floorPlanes.Count > 0;
+
+        internal delegate void SpatialAwarenessEvent();
+        internal SpatialAwarenessEvent onFloorUpdated = null;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+
+            planeManager.planesChanged += UpdateFloor;
+
+#if !UNITY_EDITOR
+            debugPlane.gameObject.SetActive(false);
+#endif
+        }
+
+        private void Update()
+        {
+            if (debug)
+            {
+                onFloorUpdated?.Invoke();
+                debug = false;
+            }
+        }
+
+        private void UpdateFloor(ARPlanesChangedEventArgs eventData)
+        {
+            foreach (ARPlane newPlane in eventData.added)
+            {
+                if (IsPlaneFloor(newPlane))
+                {
+                    floorPlanes.Add(newPlane);
+                    if (newPlane.TryGetComponent<Renderer>(out Renderer renderer))
+                    {
+                        renderer.material = floorMaterial;
+                    }
+                }
+            }
+
+            floorPlanes.RemoveAll(p => eventData.removed.Exists(r => r.trackableId == p.trackableId));
+
+            onFloorUpdated?.Invoke();
+        }
+
+        private bool IsPlaneFloor(ARPlane plane)
+        {
+            Vector3 cameraPosition = CameraCache.Main.transform.position;
+
+            if (cameraPosition.y - plane.center.y > 0.75f)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        internal bool TryGetFloorProjection(Vector3 point, out Vector3 projection)
+        {
+            projection = default;
+            LayerMask mask = LayerMask.GetMask("Spatial Awareness");
+            Debug.DrawRay(point, Vector3.down * 10f, Color.blue);
+            Debug.Break();
+            if (Physics.Raycast(point, Vector3.down, out RaycastHit hitInfo, 5f, mask))
+            {
+                projection = hitInfo.point;
+                return true;
+            }
+
+            return false;
+        }
+
+        internal Vector3 GetFloorProjection(Vector3 point)
+        {
+            LayerMask mask = LayerMask.GetMask("Spatial Awareness");
+            if (Physics.Raycast(point, Vector3.down, out RaycastHit hitInfo, 5f, mask))
+            {
+                return hitInfo.point;
+            }
+            else
+            {
+                float smallestDistance = float.PositiveInfinity;
+                ARPlane nearestPlane = null;
+                foreach (ARPlane plane in floorPlanes)
+                {
+                    Bounds planeBounds = GetBounds(plane);
+                    Vector3 closestPoint = planeBounds.ClosestPoint(point);
+                    float distance = Vector3.Distance(point, closestPoint);
+                    if (distance < smallestDistance)
+                    {
+                        smallestDistance = distance;
+                        nearestPlane = plane;
+                    }
+                }
+
+                return Vector3.ProjectOnPlane(point, nearestPlane.normal);
+            }
+        }
+
+        private Bounds GetBounds(ARPlane plane)
+        {
+            return new Bounds(plane.center, plane.size);
+        }
+    }
+}
+
