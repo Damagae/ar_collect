@@ -6,6 +6,9 @@ using UnityEngine.Events;
 
 namespace Rose.Daphne.ARCollect.SpatialAwareness
 {
+    /// <summary>
+    /// Place object on the floor when floor is detected.
+    /// </summary>
     public class FloorPlacing : MonoBehaviour
     {
         [SerializeField]
@@ -16,27 +19,7 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
 
         void Start()
         {
-            //if (!SpatialAwarenessManager.Instance.IsFloorAvailable)
-            //{
-            //    yield return new WaitUntil(() => SpatialAwarenessManager.Instance.IsFloorAvailable == true);
-            //}
-            //Transform cameraTransform = CameraCache.Main.transform;
-            //Vector3 targetPosition = cameraTransform.position + cameraTransform.forward * distanceFromCamera;
-
-            //transform.position = SpatialAwarenessManager.Instance.GetFloorProjection(targetPosition);
-            //Quaternion goalWorldRotation = Quaternion.LookRotation(-cameraTransform.forward, Vector3.up);
-            //Quaternion goalLocalRotation = Quaternion.Inverse(transform.parent.rotation) * goalWorldRotation;
-            //Vector3 goalLocalRotationEuler = goalLocalRotation.eulerAngles;
-
-            //goalLocalRotationEuler.x = 0f;
-            //goalLocalRotationEuler.z = 0f;
-
-            //goalLocalRotation = Quaternion.Euler(goalLocalRotationEuler);
-            //transform.localRotation = goalLocalRotation;
-
             SpatialAwarenessManager.Instance.onFloorUpdated += UpdatePosition;
-
-           //onFloorDetected?.Invoke();
         }
 
         private void UpdatePosition()

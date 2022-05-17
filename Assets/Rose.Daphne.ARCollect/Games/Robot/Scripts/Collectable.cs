@@ -5,6 +5,9 @@ using UnityEngine.Events;
 
 namespace Rose.Daphne.ARCollect.Games
 {
+    /// <summary>
+    /// Collectable object.
+    /// </summary>
     [RequireComponent(typeof(Collider))]
     public class Collectable : MonoBehaviour
     {
@@ -12,7 +15,15 @@ namespace Rose.Daphne.ARCollect.Games
         private UnityEvent onCollected = null;
 
         internal delegate void CollectableEvent(Collectable collectable);
+        /// <summary>
+        /// Triggered when Player enter in collision with this <see cref="Collectable"/>.
+        /// </summary>
         internal CollectableEvent OnCollectedNotification = null;
+
+        private void OnEnable()
+        {
+            GetComponent<Collider>().enabled = true;
+        }
 
         private void OnTriggerEnter(Collider collider)
         {
@@ -22,6 +33,7 @@ namespace Rose.Daphne.ARCollect.Games
                 onCollected?.Invoke();
                 OnCollectedNotification?.Invoke(this);
 
+                // Prevent other collisions
                 GetComponent<Collider>().enabled = false;
             }
         }

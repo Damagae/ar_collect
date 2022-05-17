@@ -18,6 +18,12 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
         private Material floorMaterial = null;
 
         [SerializeField]
+        private bool showFloor = true;
+
+        [SerializeField]
+        private bool showSurfaces = false;
+
+        [SerializeField]
         private Transform debugPlane = null;
         internal Transform DebugPlane => debugPlane;
 
@@ -27,6 +33,7 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
         internal static SpatialAwarenessManager Instance { private set; get; } = null;
 
         private List<ARPlane> floorPlanes = new List<ARPlane>();
+        private List<ARPlane> surfacePlanes = new List<ARPlane>();
         internal List<ARPlane> FloorPlanes => floorPlanes;
 
         internal bool IsFloorAvailable => true;// floorPlanes.Count > 0;
@@ -69,14 +76,31 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
                 if (IsPlaneFloor(newPlane))
                 {
                     floorPlanes.Add(newPlane);
-                    if (newPlane.TryGetComponent<Renderer>(out Renderer renderer))
+                    if (newPlane.TryGetComponent(out Renderer renderer))
                     {
                         renderer.material = floorMaterial;
+                    }
+
+                    if (!showFloor)
+                    {
+                        newPlane.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    surfacePlanes.Add(newPlane);
+
+                    if (!showSurfaces)
+                    {
+                        newPlane.gameObject.SetActive(false);
                     }
                 }
             }
 
             floorPlanes.RemoveAll(p => eventData.removed.Exists(r => r.trackableId == p.trackableId));
+            surfacePlanes.RemoveAll(p => eventData.removed.Exists(r => r.trackableId == p.trackableId));
+
+            eventData.removed.ForEach(p => Destroy(p.gameObject));
 
             onFloorUpdated?.Invoke();
         }
@@ -85,7 +109,7 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
         {
             Vector3 cameraPosition = CameraCache.Main.transform.position;
 
-            if (cameraPosition.y - plane.center.y > 0.75f)
+            if (cameraPosition.y - plane.center.y > 1f)
             {
                 return true;
             }
@@ -98,7 +122,6 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
             projection = default;
             LayerMask mask = LayerMask.GetMask("Spatial Awareness");
             Debug.DrawRay(point, Vector3.down * 10f, Color.blue);
-            Debug.Break();
             if (Physics.Raycast(point, Vector3.down, out RaycastHit hitInfo, 5f, mask))
             {
                 projection = hitInfo.point;
@@ -138,6 +161,18 @@ namespace Rose.Daphne.ARCollect.SpatialAwareness
         private Bounds GetBounds(ARPlane plane)
         {
             return new Bounds(plane.center, plane.size);
+        }
+
+        public void ShowFloor(bool state)
+        {
+            floorPlanes.ForEach(p => p.gameObject.SetActive(state));
+            showFloor = state;
+        }
+
+        public void ShowSurfaces(bool state)
+        {
+            surfacePlanes.ForEach(p => p.gameObject.SetActive(state));
+            showSurfaces = state;
         }
     }
 }
